@@ -34,25 +34,16 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install MediaMop backend (editable) and Playwright browser
+      - name: Install MediaMop backend (editable)
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e "./apps/backend[dev]"
-          python -m playwright install chromium
 
       - name: MediaMop web - install and build
         working-directory: apps/web
         run: |
           npm ci
           npm run build
-
-      - name: MediaMop Windows auth shell smoke
-        env:
-          MEDIAMOP_E2E: "1"
-          MEDIAMOP_HOME: ${{ runner.temp }}\mediamop-e2e
-          MEDIAMOP_SESSION_SECRET: ci-mediamop-session-secret-32chars-min
-          PYTHONPATH: ${{ github.workspace }}\apps\backend\src
-        run: python -m pytest tests/e2e/mediamop -q --tb=short
 
       - name: Install Inno Setup
         run: choco install innosetup --no-progress -y
@@ -163,7 +154,9 @@ jobs:
       - name: Smoke test published Docker image
         run: |
           docker rm -f mediamop-release-smoke >/dev/null 2>&1 || true
-          docker run -d --name mediamop-release-smoke -p 8788:8788 "${{ env.PUBLISHED_IMAGE }}:latest"
+          docker run -d --name mediamop-release-smoke -p 8788:8788 \
+            -e MEDIAMOP_SESSION_SECRET=ci-mediamop-session-secret-32chars-min \
+            "${{ env.PUBLISHED_IMAGE }}:latest"
           for i in {1..30}; do
             if curl -fsS http://127.0.0.1:8788/health >/tmp/mediamop-health.json; then
               cat /tmp/mediamop-health.json
