@@ -71,7 +71,8 @@ if (-not $SkipWebBuild) {
 Push-Location $backendDir
 try {
   Invoke-Native -FilePath $py -ArgumentList @("-m", "pip", "install", "--upgrade", "pip")
-  Invoke-Native -FilePath $py -ArgumentList @("-m", "pip", "install", "-e", ".[windows]")
+  Invoke-Native -FilePath $py -ArgumentList @("-m", "pip", "install", "-e", ".")
+  Invoke-Native -FilePath $py -ArgumentList @("-m", "pip", "install", "pillow>=11.0.0", "pyinstaller>=6.12.0", "pystray>=0.19.5")
 } finally {
   Pop-Location
 }
