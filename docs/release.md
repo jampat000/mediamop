@@ -33,8 +33,7 @@ The `Release` workflow:
 - reruns backend tests on Linux
 - reruns web build and unit tests on Linux
 - reruns the E2E auth smoke on Linux
-- reruns a Windows E2E smoke on `windows-latest`
-- builds `MediaMopSetup.exe` on Windows
+- builds `MediaMopSetup.exe` on `windows-latest`
 - publishes `mediamop-web-dist.zip`
 - builds and pushes Docker tags:
   - `ghcr.io/<owner>/<repo>:vX.Y.Z`
