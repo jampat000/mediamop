@@ -50,7 +50,12 @@ def test_auth_shell_bootstrap_login_logout_guard(mediamop_shell: str) -> None:
             expect(page).to_have_url(re.compile(r".*/app"))
             expect(page.get_by_test_id("shell-ready")).to_be_visible()
 
-            page.get_by_test_id("sign-out").click()
+            with page.expect_response(
+                lambda response: response.url.endswith("/api/v1/auth/logout"),
+                timeout=_URL_ASSERT_MS,
+            ) as logout_response:
+                page.get_by_test_id("sign-out").click()
+            assert logout_response.value.ok
             expect(page).to_have_url(re.compile(r".*/login"), timeout=_URL_ASSERT_MS)
 
             page.goto(f"{base}/app", wait_until="domcontentloaded")
